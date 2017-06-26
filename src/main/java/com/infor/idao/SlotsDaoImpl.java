@@ -55,6 +55,7 @@ public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
 			inforUser.setInforaddress(ConverterUtils.convertToString(obj[5]));
 			inforUser.setPosition(ConverterUtils.convertToString(obj[6]));
 			
+			inforParking.setUserid(ConverterUtils.convertToInteger(obj[0]));
 			inforParking.setParkingid(ConverterUtils.convertToString(obj[7]));
 			inforParking.setIsparkingtandem(ConverterUtils.convertToString(obj[8]));
 
