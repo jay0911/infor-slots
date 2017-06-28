@@ -1,15 +1,14 @@
 package com.infor.endpoint;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.infor.dto.SlotsDTO;
-import com.infor.models.InforSlots;
 import com.infor.service.SlotsService;
 import com.infor.utils.InstantationUtil;
+
 
 @RestController
 public class SlotEndpoint {
@@ -41,14 +40,18 @@ public class SlotEndpoint {
 	}
 	
 	@GetMapping("/getUnAvailSlot")
-	public List<InforSlots> getUnAvailSlot() {
+	public SlotsDTO getUnAvailSlot() {
 		// TODO Auto-generated method stub
-		return slotService.getUnAvailSlot();
+		SlotsDTO dto = InstantationUtil.createSlotsDTOInstance();
+		dto.setInforSlots(slotService.getUnAvailSlot());
+		return dto;
 	}
 	
 	@GetMapping("/getAvailSlot")
-	public List<InforSlots> getAvailSlot() {
+	public SlotsDTO getAvailSlot() {
 		// TODO Auto-generated method stub
-		return slotService.getUnAvailSlot();
+		SlotsDTO dto = InstantationUtil.createSlotsDTOInstance();
+		dto.setInforSlots(slotService.getAvailSlot());
+		return dto;
 	}
 }
