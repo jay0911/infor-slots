@@ -33,4 +33,16 @@ public class SlotsServiceImpl implements SlotsService{
 		return slotsDao.getAllSlots();
 	}
 
+	@Override
+	public List<InforSlots> getAvailSlot() {
+		// TODO Auto-generated method stub
+		return slotsDao.getAvailSlot();
+	}
+
+	@Override
+	public List<InforSlots> getUnAvailSlot() {
+		// TODO Auto-generated method stub
+		return slotsDao.getUnAvailSlot();
+	}
+
 }
