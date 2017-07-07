@@ -1,11 +1,16 @@
 package com.infor.endpoint;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.infor.dto.SlotsDTO;
+import com.infor.models.InforParking;
 import com.infor.service.SlotsService;
 import com.infor.utils.InstantationUtil;
 
@@ -52,6 +57,13 @@ public class SlotEndpoint {
 		// TODO Auto-generated method stub
 		SlotsDTO dto = InstantationUtil.createSlotsDTOInstance();
 		dto.setInforSlots(slotService.getAvailSlot());
+		return dto;
+	}
+	
+	@PostMapping("/getAllSlotsConditional")
+	public SlotsDTO getAllSlotsConditional(@RequestBody InforParking ip){
+		SlotsDTO dto = InstantationUtil.createSlotsDTOInstance();
+		dto.setInforSlots(slotService.getAllSlotsConditional(ip));
 		return dto;
 	}
 }

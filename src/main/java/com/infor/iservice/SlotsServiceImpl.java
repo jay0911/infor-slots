@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.infor.dao.SlotsDao;
+import com.infor.models.InforParking;
 import com.infor.models.InforSlots;
 import com.infor.service.SlotsService;
 
@@ -43,6 +44,12 @@ public class SlotsServiceImpl implements SlotsService{
 	public List<InforSlots> getUnAvailSlot() {
 		// TODO Auto-generated method stub
 		return slotsDao.getUnAvailSlot();
+	}
+
+	@Override
+	public List<InforSlots> getAllSlotsConditional(InforParking ip) {
+		// TODO Auto-generated method stub
+		return slotsDao.getAllSlotsConditional(ip);
 	}
 
 }

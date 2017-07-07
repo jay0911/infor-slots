@@ -2,6 +2,7 @@ package com.infor.dao;
 
 import java.util.List;
 
+import com.infor.models.InforParking;
 import com.infor.models.InforSlots;
 
 public interface SlotsDao {
@@ -15,4 +16,6 @@ public interface SlotsDao {
 	
 	public List<InforSlots> getAvailSlot();
 	public List<InforSlots> getUnAvailSlot();
+	
+	public List<InforSlots> getAllSlotsConditional(InforParking ip);
 }

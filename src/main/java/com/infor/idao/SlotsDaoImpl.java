@@ -16,26 +16,25 @@ import com.infor.utils.ConverterUtils;
 @Repository
 @Transactional
 public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
+	
+	private final static String SELECT_USERS_FROM_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid where parkingid=:parkingid";
 
 	private final static String SELECT_ALL_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip left join tbl_inforuser iu on ip.userid = iu.userid";
 	private final static String SELECT_UNASSIGNED_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip left join tbl_inforuser iu on ip.userid = iu.userid where ip.userid=0";
 	private final static String SELECT_ASSIGNED_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid where ip.userid !=0";
 	
-	private final static String SELECT_AVAIL_SLOT = "select distinct ti.* from tbl_inforparking ti left join tbl_infortransaction tif on ti.userid = tif.userid"+
-													" where ti.isparkingtandem = 'No' and tif.timeout = '-'"+
-													" union all"+
-													" select distinct tip.* from tbl_inforparking tip inner join (select parkingid,case when count(*) = 2 then 'full' else 'not occupied' end as occupied from tbl_inforparking where userid in"+
-													" (select distinct ti.userid from tbl_inforparking ti left join tbl_infortransaction tif on ti.userid = tif.userid"+
-													" where ti.isparkingtandem = 'Yes' and tif.timeout = '-') group by parkingid) nw on tip.parkingid = nw.parkingid"+
-													" where nw.occupied = 'full'";
+	private final static String SELECT_AVAIL_SLOT = "select ti.parkingid,cast('full' as text) as occupied"+
+													" from tbl_inforparking ti left join tbl_infortransaction tif on ti.userid = tif.userid where"+
+													" ti.isparkingtandem = 'No' and tif.timeout = '-' union all"+
+													" select * from (select parkingid, case when count(*) = 2 then 'full' else 'not occupied' end as occupied from tbl_inforparking where"+
+													" userid in (select distinct ti.userid from tbl_inforparking ti inner join tbl_infortransaction tif on ti.userid = tif.userid where"+
+													" ti.isparkingtandem = 'Yes' and tif.timeout = '-') group by parkingid) as truetandem where occupied = 'full'";
 	
-	private final static String SELECT_NOTAVAIL_SLOT = "select distinct ti.* from tbl_inforparking ti left join tbl_infortransaction tif on ti.userid = tif.userid"+
-			" where ti.isparkingtandem = 'No' and tif.timeout != '-'"+
-			" union all"+
-			" select distinct tip.* from tbl_inforparking tip inner join (select parkingid,case when count(*) = 2 then 'full' else 'not occupied' end as occupied from tbl_inforparking where userid in"+
-			" (select distinct ti.userid from tbl_inforparking ti left join tbl_infortransaction tif on ti.userid = tif.userid"+
-			" where ti.isparkingtandem = 'Yes' and tif.timeout != '-') group by parkingid) nw on tip.parkingid = nw.parkingid"+
-			" where nw.occupied = 'full'";
+	private final static String SELECT_NOTAVAIL_SLOT = "select distinct parkingid,cast('not full' as text) as occupied from tbl_infortransaction where parkingid not in (select parkingid from  (select"+
+			" ti.parkingid,cast('full' as text) as occupied from tbl_inforparking ti left join tbl_infortransaction tif"+
+			" on ti.userid = tif.userid where ti.isparkingtandem = 'No' and tif.timeout = '-' union all select * from (select parkingid,case when count(*) = 2 then 'full' else 'not occupied'"+
+			" end as occupied from tbl_inforparking where userid in (select distinct ti.userid from tbl_inforparking ti inner join tbl_infortransaction tif on ti.userid = tif.userid"+
+			" where ti.isparkingtandem = 'Yes' and tif.timeout = '-')group by parkingid) as truetandem where occupied = 'full') notfull)";
 	
 	@Override
 	public List<InforSlots> getUnassignedSlots() {
@@ -56,9 +55,13 @@ public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<InforSlots> commonSelectSlotsNative(String query){
+	private List<InforSlots> commonSelectSlotsNative(String query){		
+		return castPlainObject(customNativeSelectQuery(query).list());
+	}
+
+	
+	private List<InforSlots> castPlainObject(List<Object[]> plainObj){
 		List<InforSlots> is = new ArrayList<InforSlots>();
-		List<Object[]> plainObj = customNativeSelectQuery(query).list();	
 		for(Object[] obj: plainObj){
 			InforUser inforUser = new InforUser();
 			InforParking inforParking = new InforParking();
@@ -107,6 +110,13 @@ public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
 	public List<InforSlots> getUnAvailSlot() {
 		// TODO Auto-generated method stub
 		return commonSelectTransactionSlotsNative(SELECT_NOTAVAIL_SLOT);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<InforSlots> getAllSlotsConditional(InforParking ip) {
+		// TODO Auto-generated method stub
+		return castPlainObject(customNativeSelectQuery(SELECT_USERS_FROM_SLOTS).setParameter("parkingid", ip.getParkingid()).list());
 	}
 
 }
