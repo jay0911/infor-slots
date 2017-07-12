@@ -17,5 +17,5 @@ public interface SlotsDao {
 	public List<InforSlots> getAvailSlot();
 	public List<InforSlots> getUnAvailSlot();
 	
-	public List<InforSlots> getAllSlotsConditional(InforParking ip);
+	public List<InforSlots> getAllSlotsConditional(InforParking ip,String query);
 }

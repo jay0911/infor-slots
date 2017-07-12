@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.infor.dao.SlotsDao;
-import com.infor.models.InforParking;
+import com.infor.dto.SlotsDTO;
 import com.infor.models.InforSlots;
 import com.infor.service.SlotsService;
 
 @Service
 public class SlotsServiceImpl implements SlotsService{
-	
+	private static final String NOT_OCCUPIED = "select distinct iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid inner join tbl_infortransaction tif on iu.userid = tif.userid where tif.parkingid=:parkingid and tif.timeout != '-'";
+	private static final String OCCUPIED = "select distinct iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid inner join tbl_infortransaction tif on iu.userid = tif.userid where tif.parkingid=:parkingid and tif.timeout = '-'";	
 	@Autowired
 	SlotsDao slotsDao;
 
@@ -47,9 +48,13 @@ public class SlotsServiceImpl implements SlotsService{
 	}
 
 	@Override
-	public List<InforSlots> getAllSlotsConditional(InforParking ip) {
+	public List<InforSlots> getAllSlotsConditional(SlotsDTO ip) {
 		// TODO Auto-generated method stub
-		return slotsDao.getAllSlotsConditional(ip);
+		if(ip.getOccupancy_flagger().equals("occupied")){
+			return slotsDao.getAllSlotsConditional(ip.getParking(),OCCUPIED);
+		}else{
+			return slotsDao.getAllSlotsConditional(ip.getParking(),NOT_OCCUPIED);
+		}	
 	}
 
 }

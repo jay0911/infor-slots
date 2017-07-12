@@ -17,7 +17,7 @@ import com.infor.utils.ConverterUtils;
 @Transactional
 public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
 	
-	private final static String SELECT_USERS_FROM_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid where parkingid=:parkingid";
+	//private final static String SELECT_USERS_FROM_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip inner join tbl_inforuser iu on ip.userid = iu.userid where parkingid=:parkingid";
 
 	private final static String SELECT_ALL_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip left join tbl_inforuser iu on ip.userid = iu.userid";
 	private final static String SELECT_UNASSIGNED_SLOTS = "select iu.userid,iu.firstname,iu.lastname,iu.contactnumber,iu.emailaddress,iu.inforaddress,iu.position,ip.parkingid,ip.isparkingtandem from tbl_inforparking ip left join tbl_inforuser iu on ip.userid = iu.userid where ip.userid=0";
@@ -114,9 +114,9 @@ public class SlotsDaoImpl extends HibernateDaoSupport implements SlotsDao{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<InforSlots> getAllSlotsConditional(InforParking ip) {
+	public List<InforSlots> getAllSlotsConditional(InforParking ip,String query) {
 		// TODO Auto-generated method stub
-		return castPlainObject(customNativeSelectQuery(SELECT_USERS_FROM_SLOTS).setParameter("parkingid", ip.getParkingid()).list());
+		return castPlainObject(customNativeSelectQuery(query).setParameter("parkingid", ip.getParkingid()).list());
 	}
 
 }

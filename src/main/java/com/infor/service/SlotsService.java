@@ -2,7 +2,7 @@ package com.infor.service;
 
 import java.util.List;
 
-import com.infor.models.InforParking;
+import com.infor.dto.SlotsDTO;
 import com.infor.models.InforSlots;
 
 public interface SlotsService {
@@ -15,5 +15,5 @@ public interface SlotsService {
 	public List<InforSlots> getAllSlots();
 	public List<InforSlots> getAvailSlot();
 	public List<InforSlots> getUnAvailSlot();
-	public List<InforSlots> getAllSlotsConditional(InforParking ip);
+	public List<InforSlots> getAllSlotsConditional(SlotsDTO dto);
 }
